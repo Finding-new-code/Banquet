@@ -10,17 +10,26 @@ export default () => ({
         version: process.env.APP_VERSION || '1.0.0',
     },
     database: {
-        url: process.env.DATABASE_URL || '',
-        poolMin: parseInt(process.env.DB_POOL_MIN || '2', 10),
-        poolMax: parseInt(process.env.DB_POOL_MAX || '10', 10),
+        uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/cynerza_db',
     },
     security: {
         jwt: {
-            secret: process.env.JWT_SECRET || '',
-            expiration: process.env.JWT_EXPIRATION || '1d',
+            accessSecret: process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || '',
+            accessExpiration: process.env.JWT_ACCESS_EXPIRATION || '15m',
+            refreshSecret: process.env.JWT_REFRESH_SECRET || '',
+            refreshExpiration: process.env.JWT_REFRESH_EXPIRATION || '7d',
         },
         bcrypt: {
-            rounds: parseInt(process.env.BCRYPT_ROUNDS || '10', 10),
+            rounds: parseInt(process.env.BCRYPT_ROUNDS || '12', 10),
+        },
+        otp: {
+            length: parseInt(process.env.OTP_LENGTH || '6', 10),
+            expiration: parseInt(process.env.OTP_EXPIRATION || '300', 10), // 5 minutes in seconds
+            maxAttempts: parseInt(process.env.OTP_MAX_ATTEMPTS || '3', 10),
+        },
+        rateLimit: {
+            loginAttemptLimit: parseInt(process.env.LOGIN_ATTEMPT_LIMIT || '5', 10),
+            loginAttemptWindow: parseInt(process.env.LOGIN_ATTEMPT_WINDOW || '900', 10), // 15 minutes in seconds
         },
     },
     cors: {

@@ -14,14 +14,23 @@ export const envValidationSchema = Joi.object({
     APP_VERSION: Joi.string().required(),
 
     // Database
-    DATABASE_URL: Joi.string().required(),
-    DB_POOL_MIN: Joi.number().default(2),
-    DB_POOL_MAX: Joi.number().default(10),
+    MONGODB_URI: Joi.string().required(),
 
-    // Security
-    JWT_SECRET: Joi.string().min(32).required(),
-    JWT_EXPIRATION: Joi.string().default('1d'),
+    // Security - JWT
+    JWT_ACCESS_SECRET: Joi.string().min(32).required(),
+    JWT_ACCESS_EXPIRATION: Joi.string().default('15m'),
+    JWT_REFRESH_SECRET: Joi.string().min(32).required(),
+    JWT_REFRESH_EXPIRATION: Joi.string().default('7d'),
     BCRYPT_ROUNDS: Joi.number().min(10).max(15).default(10),
+
+    // Rate Limiting - Login attempts
+    LOGIN_ATTEMPT_LIMIT: Joi.number().default(5),
+    LOGIN_ATTEMPT_WINDOW: Joi.number().default(900),
+
+    // OTP Configuration
+    OTP_LENGTH: Joi.number().default(6),
+    OTP_EXPIRATION: Joi.number().default(300),
+    OTP_MAX_ATTEMPTS: Joi.number().default(3),
 
     // CORS
     CORS_ORIGIN: Joi.string().required(),

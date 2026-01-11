@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@config/config.module';
 import { DatabaseModule } from '@infrastructure/database/database.module';
 import { HealthModule } from '@modules/health/health.module';
+import { AuthModule } from '@modules/auth/auth.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * Root Application Module
@@ -13,8 +16,21 @@ import { HealthModule } from '@modules/health/health.module';
         ConfigModule,
         DatabaseModule,
 
+        // Security - Rate limiting
+        ThrottlerModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (config: ConfigService) => ({
+                throttlers: [{
+                    ttl: (config.get<number>('throttle.ttl') || 60) * 1000, // Convert to ms
+                    limit: config.get<number>('throttle.limit') || 100,
+                }],
+            }),
+        }),
+
         // Feature modules
+        AuthModule,
         HealthModule,
     ],
 })
 export class AppModule { }
+
