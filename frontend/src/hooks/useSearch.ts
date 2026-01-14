@@ -46,13 +46,21 @@ async function fetchSuggestions(query: string) {
 }
 
 async function fetchPopularSearches() {
-    const { data } = await api.get('/search/popular');
-    return data.data;
+    try {
+        const { data } = await api.get('/search/popular');
+        return data?.data || [];
+    } catch (error) {
+        return [];
+    }
 }
 
 async function fetchTrendingLocations() {
-    const { data } = await api.get('/search/trending/locations');
-    return data.data;
+    try {
+        const { data } = await api.get('/search/trending/locations');
+        return data?.data || [];
+    } catch (error) {
+        return [];
+    }
 }
 
 // Hooks

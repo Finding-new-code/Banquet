@@ -65,7 +65,7 @@ export default function AdminBanquetsPage() {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    banquets.map((banquet) => (
+                                    banquets?.map((banquet) => (
                                         <TableRow key={banquet._id}>
                                             <TableCell className="font-medium">{banquet.name}</TableCell>
                                             <TableCell>{banquet.city}</TableCell>

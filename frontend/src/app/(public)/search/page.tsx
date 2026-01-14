@@ -18,6 +18,7 @@ import {
 import { Search as SearchIcon, Filter, MapPin, Star } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Suspense } from "react";
+import { IndianPatternBg } from "@/components/ui/indian-pattern-bg";
 
 // Mock facets/filters (ideally fetched from API via useSearchFacets)
 const AMENITIES = ["AC", "Parking", "Catering", "Decor", "Alcohol Allowed", "DJ", "Valet"];
@@ -191,7 +192,8 @@ function SearchPageContent() {
     );
 
     return (
-        <div className="container min-h-screen py-6 px-4 md:px-6">
+        <div className="container min-h-screen py-6 px-4 md:px-6 relative">
+            <IndianPatternBg pattern="floral" opacity={0.03} className="fixed inset-0 pointer-events-none" />
 
             {/* Search Header */}
             <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between z-50 relative">

@@ -9,6 +9,8 @@ import { BanquetCard, BanquetProps } from "@/components/banquet-card";
 import { useQuery } from "@tanstack/react-query";
 import { usePopularSearches, useTrendingLocations } from "@/hooks/useSearch";
 import { Badge } from "@/components/ui/badge";
+// import WaveAnimation from "@/components/ui/wave-animation";
+import { IndianPatternBg } from "@/components/ui/indian-pattern-bg";
 
 // Fetch trending function (mocked or real)
 async function fetchTrendingBanquets() {
@@ -78,6 +80,7 @@ export default function HomePage() {
                         className="w-full h-full object-cover brightness-50"
                     />
                 </div>
+                {/* <WaveAnimation /> */}
                 <div className="relative z-10 container px-4 md:px-6 text-center text-white">
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                         Find the Perfect Venue for Your Event
@@ -136,7 +139,7 @@ export default function HomePage() {
                                 onClick={() => router.push(`/search?cities=${city}`)}
                             >
                                 <img
-                                    src={`https://source.unsplash.com/800x600/?${city},city`} // Dynamic image
+                                    src={`/images/cities/${city.toLowerCase()}.png`} // Local dynamic image
                                     alt={city}
                                     className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
                                 />
@@ -178,8 +181,9 @@ export default function HomePage() {
             </section>
 
             {/* Features Section */}
-            <section className="py-16 bg-muted/30 border-t">
-                <div className="container px-4 text-center">
+            <section className="py-16 bg-muted/30 border-t relative overflow-hidden">
+                <IndianPatternBg pattern="lotus" opacity={0.08} />
+                <div className="container px-4 text-center relative z-10">
                     <h2 className="text-3xl font-bold mb-12">Why Book With Us?</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div className="p-6 bg-background rounded-lg shadow-sm border transition-shadow hover:shadow-md">
