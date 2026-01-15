@@ -39,7 +39,15 @@ export default function BanquetDetailsPage() {
     }
 
     if (!banquet) {
-        return <div className="container py-10">Banquet not found</div>;
+        return (
+            <div className="container py-20 text-center">
+                <h1 className="text-4xl font-bold mb-4">Banquet Not Found</h1>
+                <p className="text-muted-foreground mb-6">
+                    This banquet doesn't exist or may have been removed.
+                </p>
+                <Button onClick={() => router.push('/search')}>Browse Banquets</Button>
+            </div>
+        );
     }
 
     const handleBookClick = () => {
@@ -118,12 +126,16 @@ export default function BanquetDetailsPage() {
                         <section>
                             <h2 className="text-xl font-semibold mb-4">Amenities</h2>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {banquet.amenities?.map((amenity: string) => (
-                                    <div key={amenity} className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-primary" />
-                                        <span>{amenity}</span>
-                                    </div>
-                                ))}
+                                {banquet.amenities && typeof banquet.amenities === 'object' &&
+                                    Object.entries(banquet.amenities)
+                                        .filter(([_, value]) => value === true)
+                                        .map(([key]) => (
+                                            <div key={key} className="flex items-center gap-2">
+                                                <Check className="h-4 w-4 text-primary" />
+                                                <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                                            </div>
+                                        ))
+                                }
                             </div>
                         </section>
                     </div>
@@ -159,7 +171,7 @@ export default function BanquetDetailsPage() {
                                         <DialogTitle>Book {banquet.name}</DialogTitle>
                                     </DialogHeader>
                                     <div className="py-4">
-                                        <BookingForm banquetId={banquet._id} onSuccess={() => {
+                                        <BookingForm banquetId={banquet.id} onSuccess={() => {
                                             // Optional: Close dialog / redirect
                                         }} />
                                     </div>

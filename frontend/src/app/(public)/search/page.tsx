@@ -268,7 +268,7 @@ function SearchPageContent() {
                             ))
                         ) : (
                             data?.banquets?.map((banquet: any) => (
-                                <BanquetCard key={banquet._id} banquet={banquet} />
+                                <BanquetCard key={banquet.id} banquet={banquet} />
                             ))
                         )}
                         {!isLoading && (!data?.banquets || data.banquets.length === 0) && (

@@ -6,7 +6,7 @@ import { MapPin, Users, Star, IndianRupee } from "lucide-react";
 import Image from "next/image"; // Note: Ensure domain handling in next.config.ts if using external images
 
 export interface BanquetProps {
-    _id: string; // MongoDB ID usually
+    id: string; // MongoDB ObjectId as string
     name: string;
     address: string;
     city: string;
@@ -61,13 +61,22 @@ export function BanquetCard({ banquet }: { banquet: BanquetProps }) {
                     </div>
                 </div>
                 <div className="flex flex-wrap gap-1 mt-2">
-                    {banquet.amenities?.slice(0, 3).map((amenity) => (
-                        <Badge key={amenity} variant="outline" className="text-xs font-normal">
-                            {amenity}
-                        </Badge>
-                    ))}
-                    {banquet.amenities && banquet.amenities.length > 3 && (
-                        <Badge variant="outline" className="text-xs font-normal">+{banquet.amenities.length - 3}</Badge>
+                    {banquet.amenities && typeof banquet.amenities === 'object' && (
+                        <>
+                            {Object.entries(banquet.amenities)
+                                .filter(([_, value]) => value === true)
+                                .slice(0, 3)
+                                .map(([key]) => (
+                                    <Badge key={key} variant="outline" className="text-xs font-normal">
+                                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                                    </Badge>
+                                ))}
+                            {Object.entries(banquet.amenities).filter(([_, v]) => v === true).length > 3 && (
+                                <Badge variant="outline" className="text-xs font-normal">
+                                    +{Object.entries(banquet.amenities).filter(([_, v]) => v === true).length - 3}
+                                </Badge>
+                            )}
+                        </>
                     )}
                 </div>
             </CardContent>
@@ -81,7 +90,7 @@ export function BanquetCard({ banquet }: { banquet: BanquetProps }) {
                     </div>
                 </div>
                 <Button asChild>
-                    <Link href={`/banquets/${banquet._id}`}>View Details</Link>
+                    <Link href={`/banquets/${banquet.id}`}>View Details</Link>
                 </Button>
             </CardFooter>
         </Card>

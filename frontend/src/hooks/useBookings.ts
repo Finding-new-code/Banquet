@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import { useAuth } from "./useAuth";
 
 export interface Booking {
     _id: string;
@@ -30,14 +31,23 @@ export interface CreateBookingDto {
 }
 
 async function fetchMyBookings() {
-    const { data } = await api.get("/bookings/my");
-    return data.data;
+    try {
+        const { data } = await api.get("/bookings/my");
+        return data?.data || data || [];
+    } catch (error) {
+        console.error("Error fetching my bookings:", error);
+        return [];
+    }
 }
 
 async function fetchOwnerBookings() {
-    // Assuming backend endpoint for owner bookings exists
-    const { data } = await api.get("/bookings/owner");
-    return data.data;
+    try {
+        const { data } = await api.get("/bookings/owner");
+        return data?.data || data || [];
+    } catch (error) {
+        console.error("Error fetching owner bookings:", error);
+        return [];
+    }
 }
 
 async function createBooking(data: CreateBookingDto) {
@@ -51,9 +61,13 @@ async function updateBookingStatus({ id, status }: { id: string; status: string 
 }
 
 export function useBookings() {
+    const { user } = useAuth();
+    const isOwner = user?.role === "OWNER";
+
     return useQuery({
         queryKey: ["myBookings"],
         queryFn: fetchMyBookings,
+        enabled: !isOwner, // Don't fetch if user is an owner (prevents 403)
     });
 }
 

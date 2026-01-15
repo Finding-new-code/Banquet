@@ -30,8 +30,29 @@ export interface SearchResult {
 }
 
 async function searchBanquets(filters: SearchFilters): Promise<SearchResult> {
-    const { data } = await api.post('/search/banquets', filters);
-    return data.data;
+    try {
+        console.log('[Search Debug] Filters:', filters);
+        const { data } = await api.post('/search/banquets', filters);
+        console.log('[Search Debug] Raw response:', data);
+        // API returns {data: [...banquets...], pagination: {...}} directly
+        const result = {
+            banquets: data?.data || [],
+            meta: {
+                total: data?.pagination?.total || 0,
+                page: data?.pagination?.page || 1,
+                limit: data?.pagination?.limit || 10,
+                pages: data?.pagination?.totalPages || 0,
+            }
+        };
+        console.log('[Search Debug] Final result:', result);
+        return result;
+    } catch (error) {
+        console.error("Error searching banquets:", error);
+        return {
+            banquets: [],
+            meta: { total: 0, page: 1, limit: 10, pages: 0 }
+        };
+    }
 }
 
 async function fetchSearchFacets() {
@@ -41,8 +62,13 @@ async function fetchSearchFacets() {
 
 async function fetchSuggestions(query: string) {
     if (!query || query.length < 2) return [];
-    const { data } = await api.get(`/search/suggestions?q=${encodeURIComponent(query)}`);
-    return data.data;
+    try {
+        const { data } = await api.get(`/search/suggestions?q=${encodeURIComponent(query)}`);
+        return data?.data || [];
+    } catch (error) {
+        console.warn('Failed to fetch search suggestions:', error);
+        return [];
+    }
 }
 
 async function fetchPopularSearches() {

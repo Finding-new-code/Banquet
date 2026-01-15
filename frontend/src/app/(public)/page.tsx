@@ -15,9 +15,10 @@ import { IndianPatternBg } from "@/components/ui/indian-pattern-bg";
 // Fetch trending function (mocked or real)
 async function fetchTrendingBanquets() {
     // Mock data for initial display to look good immediately
+    // Using valid MongoDB ObjectId format (24-character hex strings)
     return [
         {
-            _id: "1",
+            id: "677e8a1b2c3d4e5f6a7b8c9d",
             name: "Grand Palace Hotel",
             address: "123 Main St",
             city: "Mumbai",
@@ -28,7 +29,7 @@ async function fetchTrendingBanquets() {
             primaryImage: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2098&auto=format&fit=crop"
         },
         {
-            _id: "2",
+            id: "677e8a1b2c3d4e5f6a7b8c9e",
             name: "Sea View Banquets",
             address: "45 Beach Road",
             city: "Goa",
@@ -39,7 +40,7 @@ async function fetchTrendingBanquets() {
             primaryImage: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop"
         },
         {
-            _id: "3",
+            id: "677e8a1b2c3d4e5f6a7b8c9f",
             name: "Royal Garden",
             address: "88 Garden Lane",
             city: "Delhi",
@@ -173,7 +174,7 @@ export default function HomePage() {
                             ))
                         ) : (
                             trendingBanquets?.map((banquet) => (
-                                <BanquetCard key={banquet._id} banquet={banquet} />
+                                <BanquetCard key={banquet.id} banquet={banquet} />
                             ))
                         )}
                     </div>

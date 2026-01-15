@@ -3,17 +3,23 @@ import { api } from "@/lib/api";
 import { toast } from "sonner";
 
 export interface Banquet {
-    _id: string;
+    id: string;
     name: string;
     address: string;
     city: string;
+    state: string;
+    pincode: string;
     capacity: number;
-    pricePerPlate: number;
+    pricing: {
+        perPlate?: number;
+        minimumGuests?: number;
+        [key: string]: any;
+    };
     rating: number;
     isPublished: boolean;
     description?: string;
     reviewsCount?: number;
-    amenities?: string[];
+    amenities?: Record<string, any>;
     images?: string[];
 }
 
@@ -22,9 +28,11 @@ export interface CreateBanquetDto {
     description?: string;
     address: string;
     city: string;
+    state: string;
+    pincode: string;
     capacity: number;
-    pricePerPlate: number;
-    amenities?: string[];
+    pricing: Record<string, any>;
+    amenities?: Record<string, any>;
     images?: string[];
 }
 
