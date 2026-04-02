@@ -25,6 +25,7 @@ import { BanquetManagementService } from './services/banquet-management.service'
 import { AnalyticsService } from './services/analytics.service';
 import { SupportTicketService } from './services/support-ticket.service';
 import { AuditLogService } from './services/audit-log.service';
+import { AuditService } from '@common/audit/audit.service';
 import {
     SuspendUserDto,
     ActivateUserDto,
@@ -55,6 +56,7 @@ export class AdminController {
         private readonly analyticsService: AnalyticsService,
         private readonly ticketService: SupportTicketService,
         private readonly auditLogService: AuditLogService,
+        private readonly auditService: AuditService,
     ) { }
 
     // ========== DASHBOARD ==========
@@ -314,11 +316,55 @@ export class AdminController {
 
     // ========== AUDIT LOG ==========
 
-    @Get('activity')
+    @Get('audit-logs')
     @RequirePermissions(AdminPermission.VIEW_ANALYTICS)
-    @ApiOperation({ summary: 'Get recent admin activity' })
+    @ApiOperation({ summary: 'Get security audit logs' })
+    @ApiQuery({ name: 'action', required: false, type: String })
+    @ApiQuery({ name: 'severity', required: false, type: String })
+    @ApiQuery({ name: 'userId', required: false, type: String })
+    @ApiQuery({ name: 'email', required: false, type: String })
+    @ApiQuery({ name: 'startDate', required: false, type: String })
+    @ApiQuery({ name: 'endDate', required: false, type: String })
+    @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
-    async getRecentActivity(@Query('limit') limit: number = 50) {
-        return this.auditLogService.getRecentActivities(+limit);
+    async getAuditLogs(
+        @Query('action') action?: string,
+        @Query('severity') severity?: string,
+        @Query('userId') userId?: string,
+        @Query('email') email?: string,
+        @Query('startDate') startDate?: string,
+        @Query('endDate') endDate?: string,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 50,
+    ) {
+        const logs = await this.auditService.query({
+            action: action as any,
+            severity: severity as any,
+            userId,
+            email,
+            startDate: startDate ? new Date(startDate) : undefined,
+            endDate: endDate ? new Date(endDate) : undefined,
+            skip: (page - 1) * limit,
+            limit: +limit,
+        });
+
+        const total = await this.auditService.count({
+            action: action as any,
+            severity: severity as any,
+            userId,
+            email,
+            startDate: startDate ? new Date(startDate) : undefined,
+            endDate: endDate ? new Date(endDate) : undefined,
+        });
+
+        return {
+            data: logs,
+            pagination: {
+                page: +page,
+                limit: +limit,
+                total,
+                pages: Math.ceil(total / limit),
+            },
+        };
     }
 }

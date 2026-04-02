@@ -32,23 +32,13 @@ export interface CreateReviewDto {
 }
 
 async function fetchBanquetReviews(banquetId: string) {
-    try {
-        const { data } = await api.get(`/reviews/banquet/${banquetId}`);
-        return data?.data || data || [];
-    } catch (error) {
-        console.error("Error fetching banquet reviews:", error);
-        return [];
-    }
+    const { data } = await api.get(`/reviews/banquet/${banquetId}`);
+    return data?.data || data || [];
 }
 
 async function fetchMyReviews() {
-    try {
-        const { data } = await api.get("/reviews/my");
-        return data?.data || data || [];
-    } catch (error) {
-        console.error("Error fetching my reviews:", error);
-        return [];
-    }
+    const { data } = await api.get("/reviews/my");
+    return data?.data || data || [];
 }
 
 async function createReview(data: CreateReviewDto) {
@@ -91,7 +81,6 @@ export function useCreateReview() {
         },
     });
 }
-// ... existing code ...
 
 async function replyToReview({ id, content }: { id: string; content: string }) {
     const { data } = await api.post(`/reviews/${id}/reply`, { content });
@@ -103,8 +92,9 @@ export function useReplyToReview() {
 
     return useMutation({
         mutationFn: replyToReview,
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ["reviews"] }); // Invalidate all review queries
+        onSuccess: () => {
+            // Invalidate all review queries that start with "reviews" (banquet reviews, my reviews, etc.)
+            queryClient.invalidateQueries({ queryKey: ["reviews"], exact: false });
             toast.success("Reply submitted successfully!");
         },
         onError: (error: any) => {
