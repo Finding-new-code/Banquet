@@ -19,20 +19,27 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
+import { ImageUpload } from "@/components/image-upload";
+
 
 const banquetSchema = z.object({
     name: z.string().min(5, "Name must be at least 5 characters"),
     description: z.string().min(20, "Description must be at least 20 characters"),
     address: z.string().min(5, "Address is required"),
     city: z.string().min(2, "City is required"),
+    state: z.string().min(2, "State is required"),
+    pincode: z.string().min(6, "Pincode must be valid"),
     capacity: z.coerce.number().min(1, "Capacity must be at least 1"),
     pricePerPlate: z.coerce.number().min(0, "Price must be positive"),
+    minimumGuests: z.coerce.number().min(1, "Minimum guests is required").optional(),
     amenities: z.array(z.string()).refine((value) => value.length > 0, {
         message: "Select at least one amenity",
     }),
+    images: z.array(z.string()).min(1, "Upload at least one image"),
 });
 
-const AMENITIES_LIST = [
+
+export const AMENITIES_LIST = [
     "AC", "Parking", "Catering", "Decor", "Alcohol Allowed", "DJ", "Valet", "Bridal Room", "Wifi", "Power Backup"
 ];
 
@@ -54,9 +61,13 @@ export function BanquetForm({ defaultValues, onSubmit, isSubmitting, buttonText,
             description: "",
             address: "",
             city: "",
+            state: "",
+            pincode: "",
             capacity: 100,
             pricePerPlate: 500,
+            minimumGuests: 50,
             amenities: [],
+            images: [],
             ...defaultValues,
         },
     });
@@ -99,7 +110,43 @@ export function BanquetForm({ defaultValues, onSubmit, isSubmitting, buttonText,
                             )}
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="images"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Venue Images</FormLabel>
+                                    <FormControl>
+                                        <ImageUpload
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            maxFiles={5}
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Upload up to 5 high-quality images of your venue.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+
+                        <FormField
+                            control={form.control}
+                            name="address"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Address</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="123 Main St, Opp. Station" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <FormField
                                 control={form.control}
                                 name="city"
@@ -115,12 +162,25 @@ export function BanquetForm({ defaultValues, onSubmit, isSubmitting, buttonText,
                             />
                             <FormField
                                 control={form.control}
-                                name="address"
+                                name="state"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Address</FormLabel>
+                                        <FormLabel>State</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="123 Main St, Opp. Station" {...field} />
+                                            <Input placeholder="Maharashtra" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="pincode"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Pincode</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="400001" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -128,7 +188,7 @@ export function BanquetForm({ defaultValues, onSubmit, isSubmitting, buttonText,
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <FormField
                                 control={form.control}
                                 name="capacity"
@@ -148,6 +208,19 @@ export function BanquetForm({ defaultValues, onSubmit, isSubmitting, buttonText,
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Price Per Plate (₹)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="minimumGuests"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Minimum Guests</FormLabel>
                                         <FormControl>
                                             <Input type="number" {...field} />
                                         </FormControl>

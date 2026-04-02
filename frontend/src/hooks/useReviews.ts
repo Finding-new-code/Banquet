@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface Review {
     _id: string;
@@ -31,13 +32,23 @@ export interface CreateReviewDto {
 }
 
 async function fetchBanquetReviews(banquetId: string) {
-    const { data } = await api.get(`/reviews/banquet/${banquetId}`);
-    return data.data; // Assuming backend returns { data: Review[], meta: ... } or just data array
+    try {
+        const { data } = await api.get(`/reviews/banquet/${banquetId}`);
+        return data?.data || data || [];
+    } catch (error) {
+        console.error("Error fetching banquet reviews:", error);
+        return [];
+    }
 }
 
 async function fetchMyReviews() {
-    const { data } = await api.get("/reviews/my");
-    return data.data;
+    try {
+        const { data } = await api.get("/reviews/my");
+        return data?.data || data || [];
+    } catch (error) {
+        console.error("Error fetching my reviews:", error);
+        return [];
+    }
 }
 
 async function createReview(data: CreateReviewDto) {
@@ -54,9 +65,13 @@ export function useReviews(banquetId: string) {
 }
 
 export function useMyReviews() {
+    const { user } = useAuth();
+    const isOwner = user?.role === "OWNER";
+
     return useQuery({
         queryKey: ["reviews", "my"],
         queryFn: fetchMyReviews,
+        enabled: !isOwner, // Don't fetch if user is an owner (prevents 403)
     });
 }
 
@@ -73,6 +88,27 @@ export function useCreateReview() {
         },
         onError: (error: any) => {
             toast.error(error.response?.data?.message || "Failed to submit review");
+        },
+    });
+}
+// ... existing code ...
+
+async function replyToReview({ id, content }: { id: string; content: string }) {
+    const { data } = await api.post(`/reviews/${id}/reply`, { content });
+    return data.data;
+}
+
+export function useReplyToReview() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: replyToReview,
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["reviews"] }); // Invalidate all review queries
+            toast.success("Reply submitted successfully!");
+        },
+        onError: (error: any) => {
+            toast.error(error.response?.data?.message || "Failed to submit reply");
         },
     });
 }

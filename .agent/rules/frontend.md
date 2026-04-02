@@ -64,3 +64,4 @@ square-ui website: [https://square.lndev.me/]
 - Hardcoding API URLs.
 - Inline CSS (except tiny dynamic style needs).
 - Fetching data in server components that depends on browser-only auth storage.
+
