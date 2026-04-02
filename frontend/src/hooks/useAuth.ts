@@ -2,6 +2,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { z } from "zod";
+import { useState, useEffect } from "react";
 
 // --- Types ---
 export interface User {
@@ -93,8 +94,11 @@ export function useAuth() {
     const router = useRouter();
     const queryClient = useQueryClient();
 
-    // Check if we have a token before attempting to fetch user
-    const hasToken = typeof window !== "undefined" && !!localStorage.getItem("accessToken");
+    // Check if we have a token - useState + useEffect to avoid SSR hydration mismatch
+    const [hasToken, setHasToken] = useState(false);
+    useEffect(() => {
+        setHasToken(!!localStorage.getItem("accessToken"));
+    }, []);
 
     // Get current user - only fetch if token exists
     const { data: user, isLoading: isLoadingUser, error: userError } = useQuery<User>({

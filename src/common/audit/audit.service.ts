@@ -33,6 +33,8 @@ export interface AuditEntry {
 export interface AuditQueryOptions {
     userId?: string;
     action?: AuditAction;
+    severity?: AuditSeverity;
+    email?: string;
     startDate?: Date;
     endDate?: Date;
     limit?: number;
@@ -235,6 +237,12 @@ export class AuditService {
         if (options.action) {
             filter.action = options.action;
         }
+        if (options.severity) {
+            filter.severity = options.severity;
+        }
+        if (options.email) {
+            filter.email = { $regex: options.email, $options: 'i' };
+        }
         if (options.startDate || options.endDate) {
             filter.createdAt = {};
             if (options.startDate) {
@@ -251,6 +259,37 @@ export class AuditService {
             .skip(options.skip || 0)
             .limit(options.limit || 100)
             .exec();
+    }
+
+    /**
+     * Count audit logs matching filters
+     */
+    async count(options: AuditQueryOptions): Promise<number> {
+        const filter: any = {};
+
+        if (options.userId) {
+            filter.userId = new Types.ObjectId(options.userId);
+        }
+        if (options.action) {
+            filter.action = options.action;
+        }
+        if (options.severity) {
+            filter.severity = options.severity;
+        }
+        if (options.email) {
+            filter.email = { $regex: options.email, $options: 'i' };
+        }
+        if (options.startDate || options.endDate) {
+            filter.createdAt = {};
+            if (options.startDate) {
+                filter.createdAt.$gte = options.startDate;
+            }
+            if (options.endDate) {
+                filter.createdAt.$lte = options.endDate;
+            }
+        }
+
+        return this.auditLogModel.countDocuments(filter).exec();
     }
 
     /**

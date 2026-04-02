@@ -31,23 +31,13 @@ export interface CreateBookingDto {
 }
 
 async function fetchMyBookings() {
-    try {
-        const { data } = await api.get("/bookings/my");
-        return data?.data || data || [];
-    } catch (error) {
-        console.error("Error fetching my bookings:", error);
-        return [];
-    }
+    const { data } = await api.get("/bookings/my");
+    return data?.data || data || [];
 }
 
 async function fetchOwnerBookings() {
-    try {
-        const { data } = await api.get("/bookings/owner");
-        return data?.data || data || [];
-    } catch (error) {
-        console.error("Error fetching owner bookings:", error);
-        return [];
-    }
+    const { data } = await api.get("/bookings/owner");
+    return data?.data || data || [];
 }
 
 async function createBooking(data: CreateBookingDto) {

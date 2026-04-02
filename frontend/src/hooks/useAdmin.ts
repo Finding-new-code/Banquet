@@ -76,6 +76,71 @@ export interface AdminReview {
 
 export type ReviewStatus = "PENDING" | "APPROVED" | "REJECTED";
 
+// --- Audit Log Types ---
+
+export type AuditAction =
+    | "LOGIN_SUCCESS"
+    | "LOGIN_FAILURE"
+    | "LOGOUT"
+    | "REGISTER"
+    | "PASSWORD_CHANGE"
+    | "PASSWORD_RESET_REQUEST"
+    | "PASSWORD_RESET_COMPLETE"
+    | "TOKEN_REFRESH"
+    | "TOKEN_REVOKE"
+    | "USER_CREATE"
+    | "USER_UPDATE"
+    | "USER_DELETE"
+    | "USER_DEACTIVATE"
+    | "PROFILE_UPDATE"
+    | "BOOKING_CREATE"
+    | "BOOKING_UPDATE"
+    | "BOOKING_CANCEL"
+    | "BOOKING_CONFIRM"
+    | "BANQUET_CREATE"
+    | "BANQUET_UPDATE"
+    | "BANQUET_DELETE"
+    | "ADMIN_ACTION"
+    | "PERMISSION_CHANGE";
+
+export type AuditSeverity = "INFO" | "WARNING" | "CRITICAL";
+
+export interface AuditLog {
+    _id: string;
+    action: AuditAction;
+    severity: AuditSeverity;
+    userId?: string;
+    email?: string;
+    resourceType?: string;
+    resourceId?: string;
+    description: string;
+    correlationId?: string;
+    ipAddress?: string;
+    userAgent?: string;
+    metadata?: Record<string, any>;
+    success: boolean;
+    errorMessage?: string;
+    createdAt: string;
+}
+
+export interface AuditLogPagination {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+}
+
+export interface AuditLogFilters {
+    action?: AuditAction;
+    severity?: AuditSeverity;
+    userId?: string;
+    email?: string;
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+    limit?: number;
+}
+
 
 // --- API Functions ---
 
@@ -144,6 +209,12 @@ async function resolveTicket(ticketId: string) {
     return data.data;
 }
 
+// Audit Log Actions
+async function fetchAuditLogs(filters: AuditLogFilters): Promise<{ data: AuditLog[]; pagination: AuditLogPagination }> {
+    const { data } = await api.get("/admin/audit-logs", { params: filters });
+    return data;
+}
+
 // --- Hooks ---
 
 export function useAdminOverview() {
@@ -178,6 +249,13 @@ export function useAdminReviews() {
     return useQuery({
         queryKey: ["admin", "reviews", "pending"],
         queryFn: () => fetchAdminReviews(),
+    });
+}
+
+export function useAuditLogs(filters: AuditLogFilters) {
+    return useQuery({
+        queryKey: ["admin", "audit-logs", filters],
+        queryFn: () => fetchAuditLogs(filters),
     });
 }
 

@@ -21,7 +21,8 @@ import {
     LogOut,
     Building2,
     Users,
-    ShieldCheck
+    ShieldCheck,
+    ClipboardList
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -55,7 +56,8 @@ export function AppSidebar() {
         { title: "Users", url: "/dashboard/admin/users", icon: Users },
         { title: "Banquets", url: "/dashboard/admin/banquets", icon: Building2 },
         { title: "Reviews", url: "/dashboard/admin/reviews", icon: ShieldCheck },
-        { title: "Tickets", url: "/dashboard/admin/tickets", icon: Star }, // Using Star temporarily, maybe find better icon
+        { title: "Tickets", url: "/dashboard/admin/tickets", icon: Star },
+        { title: "Audit Logs", url: "/dashboard/admin/audit-logs", icon: ClipboardList },
         { title: "Analytics", url: "/dashboard/admin/analytics", icon: LayoutDashboard },
     ];
 
